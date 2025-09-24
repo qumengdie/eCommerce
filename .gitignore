@@ -6,3 +6,9 @@ backend/*.iml
 .DS_Store
 Thumbs.db
 .env
+
+.idea/
+*.iml
+out/
+
+target/
