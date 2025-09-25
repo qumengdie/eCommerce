@@ -1,14 +1,14 @@
 package com.qumengdie.ecommerce.service;
 
-import com.qumengdie.ecommerce.model.Category;
-import java.util.List;
+import com.qumengdie.ecommerce.payload.CategoryDTO;
+import com.qumengdie.ecommerce.payload.CategoryResponse;
 
 public interface CategoryService {
-  List<Category> getAllCategories();
+  CategoryResponse getAllCategories();
 
-  void createCategory(Category category);
+  CategoryDTO createCategory(CategoryDTO categoryDTO);
 
-  String deleteCategory(Long categoryId);
+  CategoryDTO deleteCategory(Long categoryId);
 
-  Category updateCategory(Category category, Long categoryId);
+  CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId);
 }
