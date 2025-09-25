@@ -1,5 +1,6 @@
 package com.qumengdie.ecommerce.controller;
 
+import com.qumengdie.ecommerce.config.AppConstants;
 import com.qumengdie.ecommerce.payload.CategoryDTO;
 import com.qumengdie.ecommerce.payload.CategoryResponse;
 import com.qumengdie.ecommerce.service.CategoryService;
@@ -16,8 +17,17 @@ public class CategoryController {
   @Autowired private CategoryService categoryService;
 
   @GetMapping("/public/categories")
-  public ResponseEntity<CategoryResponse> getAllCategories() {
-    CategoryResponse categories = categoryService.getAllCategories();
+  public ResponseEntity<CategoryResponse> getAllCategories(
+      @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false)
+          Integer pageNumber,
+      @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false)
+          Integer pageSize,
+      @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORY_BY, required = false)
+          String sortBy,
+      @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER, required = false)
+          String sortOrder) {
+    CategoryResponse categories =
+        categoryService.getAllCategories(pageNumber, pageSize, sortBy, sortOrder);
     return new ResponseEntity<>(categories, HttpStatus.OK);
   }
 

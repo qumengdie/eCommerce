@@ -6,11 +6,14 @@ import com.qumengdie.ecommerce.model.Category;
 import com.qumengdie.ecommerce.payload.CategoryDTO;
 import com.qumengdie.ecommerce.payload.CategoryResponse;
 import com.qumengdie.ecommerce.repositories.CategoryRepository;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -20,8 +23,15 @@ public class CategoryServiceImpl implements CategoryService {
   @Autowired private ModelMapper modelMapper;
 
   @Override
-  public CategoryResponse getAllCategories() {
-    List<Category> categories = categoryRepository.findAll();
+  public CategoryResponse getAllCategories(
+      Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    Sort sortByAndOrder =
+        sortOrder.equals("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+    Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+    Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
+
+    List<Category> categories = categoryPage.getContent();
     if (categories.isEmpty()) throw new APIException("No category exists");
 
     List<CategoryDTO> categoryDTOS =
@@ -29,7 +39,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     CategoryResponse categoryResponse = new CategoryResponse();
     categoryResponse.setContent(categoryDTOS);
-
+    categoryResponse.setPageNumber(categoryPage.getNumber());
+    categoryResponse.setPageSize(categoryPage.getSize());
+    categoryResponse.setTotalElements(categoryPage.getTotalElements());
+    categoryResponse.setTotalPages(categoryPage.getTotalPages());
+    categoryResponse.setLastPage(categoryPage.isLast());
     return categoryResponse;
   }
 
