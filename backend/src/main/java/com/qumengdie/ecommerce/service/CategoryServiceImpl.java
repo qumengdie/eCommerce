@@ -26,7 +26,9 @@ public class CategoryServiceImpl implements CategoryService {
   public CategoryResponse getAllCategories(
       Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
     Sort sortByAndOrder =
-        sortOrder.equals("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        sortOrder.equalsIgnoreCase("asc")
+            ? Sort.by(sortBy).ascending()
+            : Sort.by(sortBy).descending();
 
     Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
     Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
