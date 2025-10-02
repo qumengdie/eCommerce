@@ -89,7 +89,7 @@ public class AddressServiceImpl implements AddressService {
     Address addressFromDb =
         addressRepository
             .findById(addressId)
-            .orElseThrow(() -> new ResourceNotFoundException("Address", "adressId", addressId));
+            .orElseThrow(() -> new ResourceNotFoundException("Address", "addressId", addressId));
 
     User user = addressFromDb.getUser();
     user.getAddresses().removeIf(address -> address.getAddressId().equals(addressId));
