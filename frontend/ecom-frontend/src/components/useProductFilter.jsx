@@ -11,7 +11,7 @@ const useProductFilter = () => {
     const params = new URLSearchParams();
 
     const currentPage = searchParams.get('page')
-      ? Nubmer(searchParams.get('page'))
+      ? Number(searchParams.get('page'))
       : 1;
     params.set('pageNumber', currentPage - 1);
 
