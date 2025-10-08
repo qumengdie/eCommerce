@@ -2,14 +2,20 @@ package com.qumengdie.ecommerce.service;
 
 import com.qumengdie.ecommerce.payload.ProductDTO;
 import com.qumengdie.ecommerce.payload.ProductResponse;
-import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface ProductService {
   ProductDTO addProduct(Long categoryId, ProductDTO productDTO);
 
   ProductResponse getAllProducts(
-      Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+      Integer pageNumber,
+      Integer pageSize,
+      String sortBy,
+      String sortOrder,
+      String keyword,
+      String category);
 
   ProductResponse searchByCategory(
       Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
