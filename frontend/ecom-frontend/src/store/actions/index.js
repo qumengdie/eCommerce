@@ -49,3 +49,25 @@ export const fetchCategories = () => async (dispatch) => {
     });
   }
 };
+
+export const addToCart =
+  (data, qty = 1, toast) =>
+  (dispatch, getState) => {
+    // find the product
+    const { products } = getState().products;
+    const getProduct = products.find(
+      (item) => item.productId === data.productId
+    );
+
+    // check for stocks
+    const isQtyExist = getProduct.quantity >= qty;
+
+    // if in stock -> add, else -> error
+    if (isQtyExist) {
+      dispatch({ type: 'ADD_CART', payload: { ...data, quantity: qty } });
+      localStorage.setItem('cartItems', JSON.stringify(getState().carts.cart));
+      toast.success(`${data?.productName} added to the cart`);
+    } else {
+      toast.error('Out of Stock');
+    }
+  };
