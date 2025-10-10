@@ -12,16 +12,12 @@ const SetQuantity = ({
         <button
           disabled={quantity <= 1}
           className={btnStyles}
-          onClick={() => {}}
+          onClick={handleQtyDecrease}
         >
           -
         </button>
         <div className="text-red-500">{quantity}</div>
-        <button
-          disabled={quantity <= 1}
-          className={btnStyles}
-          onClick={() => {}}
-        >
+        <button className={btnStyles} onClick={handleQtyIncrease}>
           +
         </button>
       </div>
