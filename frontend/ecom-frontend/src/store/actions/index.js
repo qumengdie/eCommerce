@@ -129,3 +129,23 @@ export const authenticateSingInUser =
       setLoader(false);
     }
   };
+
+export const registerNewUser =
+  (sendData, toast, reset, navigate, setLoader) => async (dispatch) => {
+    try {
+      setLoader(true);
+      const { data } = await api.post('/auth/signup', sendData);
+      reset();
+      toast.success(data?.message || 'User Registered Successfully');
+      navigate('/login');
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data?.password ||
+          'Internal Server Error'
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
