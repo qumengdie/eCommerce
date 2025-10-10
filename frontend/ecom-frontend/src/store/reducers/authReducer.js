@@ -3,4 +3,6 @@ const initialState = {
   address: [],
 };
 
-export const authReducer = (state = initialState, action) => {};
+export const authReducer = (state = initialState, action) => {
+  return state;
+};

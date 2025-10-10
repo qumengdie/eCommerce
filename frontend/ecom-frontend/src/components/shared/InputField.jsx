@@ -1,4 +1,4 @@
-const InputField = (
+const InputField = ({
   label,
   id,
   type,
@@ -9,8 +9,8 @@ const InputField = (
   className,
   min,
   value,
-  placeholder
-) => {
+  placeholder,
+}) => {
   return (
     <div className="flex flex-col gap-1 w-full">
       <label
