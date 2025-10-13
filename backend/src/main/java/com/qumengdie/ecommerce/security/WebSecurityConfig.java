@@ -8,8 +8,8 @@ import com.qumengdie.ecommerce.repositories.UserRepository;
 import com.qumengdie.ecommerce.security.jwt.AuthEntryPointJwt;
 import com.qumengdie.ecommerce.security.jwt.AuthTokenFilter;
 import com.qumengdie.ecommerce.security.services.UserDetailsServiceImpl;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +24,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -59,14 +64,36 @@ public class WebSecurityConfig {
   }
 
   @Bean
+  CorsConfigurationSource corsConfigurationSource(@Value("${frontend.url}") String origin) {
+
+    CorsConfiguration cfg = new CorsConfiguration();
+    if (origin.contains("*") || origin.contains(":*")) {
+      cfg.setAllowedOriginPatterns(java.util.List.of(origin));
+    } else {
+      cfg.setAllowedOrigins(java.util.List.of(origin));
+    }
+    cfg.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    cfg.setAllowedHeaders(java.util.List.of("*"));
+    cfg.setAllowCredentials(true);
+    cfg.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", cfg);
+    return source;
+  }
+
+  @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.disable())
+    http.cors(c -> {})
+        .csrf(csrf -> csrf.disable())
         .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/auth/**")
+                auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
+                    .permitAll()
+                    .requestMatchers("/api/auth/**")
                     .permitAll()
                     .requestMatchers("/v3/api-docs/**")
                     .permitAll()
