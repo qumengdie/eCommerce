@@ -15,11 +15,22 @@ export const errorReducer = (state = initialState, action) => {
         errorMessage: null,
       };
 
+    case 'BUTTON_LOADER':
+      return {
+        ...state,
+        btnLoader: true,
+        errorMessage: null,
+        categoryError: null,
+      };
+
     case 'IS_SUCCESS':
       return {
         ...state,
         isLoading: false,
         errorMessage: null,
+        btnLoader: false,
+        categoryError: null,
+        categoryLoader: false,
       };
 
     case 'IS_ERROR':
@@ -27,6 +38,8 @@ export const errorReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         errorMessage: action.payload,
+        btnLoader: false,
+        categoryLoader: false,
       };
 
     case 'CATEGORY_LOADER':
@@ -41,6 +54,7 @@ export const errorReducer = (state = initialState, action) => {
         ...state,
         categoryLoader: false,
         categoryError: null,
+        errorMessage: null,
       };
 
     default:

@@ -2,10 +2,13 @@ import React from 'react';
 import InputField from '../shared/InputField';
 import { useForm } from 'react-hook-form';
 import { FaAddressCard } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Spinners from '../shared/Spinners';
+import toast from 'react-hot-toast';
+import { addUpdateUserAddress } from '../../store/actions';
 
-const AddAddressForm = () => {
+const AddAddressForm = ({ address, setOpenAddressModal }) => {
+  const dispatch = useDispatch();
   const { btnLoader } = useSelector((state) => state.errors);
   const {
     register,
@@ -17,7 +20,9 @@ const AddAddressForm = () => {
   });
 
   const onSaveAddressHandler = async (data) => {
-    console.log('Add address Click');
+    dispatch(
+      addUpdateUserAddress(data, toast, address?.addressId, setOpenAddressModal)
+    );
   };
 
   return (
@@ -31,10 +36,21 @@ const AddAddressForm = () => {
           <InputField
             label="Building Name"
             required
-            id="building"
+            id="buildingName"
             type="text"
             message="*Building Name is required"
             placeholder="Enter Building Name"
+            register={register}
+            errors={errors}
+          />
+
+          <InputField
+            label="Street"
+            required
+            id="street"
+            type="text"
+            message="*Street is required"
+            placeholder="Enter Street"
             register={register}
             errors={errors}
           />
@@ -64,20 +80,10 @@ const AddAddressForm = () => {
           <InputField
             label="Zipcode"
             required
-            id="zipcode"
+            id="zipCode"
             type="text"
             message="*Zipcode is required"
             placeholder="Enter Zipcode"
-            register={register}
-            errors={errors}
-          />
-          <InputField
-            label="Street"
-            required
-            id="street"
-            type="text"
-            message="*Street is required"
-            placeholder="Enter Street"
             register={register}
             errors={errors}
           />
