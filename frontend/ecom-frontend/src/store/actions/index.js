@@ -161,7 +161,15 @@ export const addUpdateUserAddress =
   async (dispatch, getState) => {
     dispatch({ type: 'BUTTON_LOADER' });
     try {
-      const { data } = await api.post('/addresses', sendData);
+      if (addressId) {
+        // if addressId exists, need to update the address
+        await api.put(`/addresses/${addressId}`, sendData);
+      } else {
+        // if no addressId, need to add a new address
+        const { data } = await api.post('/addresses', sendData);
+      }
+      dispatch(getUserAddresses());
+
       toast.success('Address saved successfully');
       dispatch({ type: 'IS_SUCCESS' });
     } catch (error) {
