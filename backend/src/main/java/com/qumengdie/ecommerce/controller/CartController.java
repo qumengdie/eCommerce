@@ -2,6 +2,7 @@ package com.qumengdie.ecommerce.controller;
 
 import com.qumengdie.ecommerce.model.Cart;
 import com.qumengdie.ecommerce.payload.CartDTO;
+import com.qumengdie.ecommerce.payload.CartItemDTO;
 import com.qumengdie.ecommerce.repositories.CartRepository;
 import com.qumengdie.ecommerce.service.CartService;
 import com.qumengdie.ecommerce.util.AuthUtil;
@@ -20,6 +21,12 @@ public class CartController {
   @Autowired CartRepository cartRepository;
 
   @Autowired AuthUtil authUtil;
+
+  @PostMapping("/cart/create")
+  public ResponseEntity<String> createOrUpdateCart(@RequestBody List<CartItemDTO> cartItems) {
+    String response = cartService.createOrUpdateCartWithItems(cartItems);
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
 
   @PostMapping("/carts/products/{productId}/quantity/{quantity}")
   public ResponseEntity<CartDTO> addProductToCart(
