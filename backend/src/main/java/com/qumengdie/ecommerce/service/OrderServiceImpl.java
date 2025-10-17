@@ -2,13 +2,29 @@ package com.qumengdie.ecommerce.service;
 
 import com.qumengdie.ecommerce.exceptions.APIException;
 import com.qumengdie.ecommerce.exceptions.ResourceNotFoundException;
-import com.qumengdie.ecommerce.model.*;
+import com.qumengdie.ecommerce.model.Address;
+import com.qumengdie.ecommerce.model.Cart;
+import com.qumengdie.ecommerce.model.CartItem;
+import com.qumengdie.ecommerce.model.Order;
+import com.qumengdie.ecommerce.model.OrderItem;
+import com.qumengdie.ecommerce.model.Payment;
+import com.qumengdie.ecommerce.model.Product;
 import com.qumengdie.ecommerce.payload.OrderDTO;
 import com.qumengdie.ecommerce.payload.OrderItemDTO;
-import com.qumengdie.ecommerce.repositories.*;
+import com.qumengdie.ecommerce.payload.OrderResponse;
+import com.qumengdie.ecommerce.repositories.AddressRepository;
+import com.qumengdie.ecommerce.repositories.CartRepository;
+import com.qumengdie.ecommerce.repositories.OrderItemRepository;
+import com.qumengdie.ecommerce.repositories.OrderRepository;
+import com.qumengdie.ecommerce.repositories.PaymentRepository;
+import com.qumengdie.ecommerce.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -107,5 +123,30 @@ public class OrderServiceImpl implements OrderService {
         item -> orderDTO.getOrderItems().add(modelMapper.map(item, OrderItemDTO.class)));
 
     return orderDTO;
+  }
+
+  @Override
+  public OrderResponse getAllOrders(
+      Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    Sort sortByAndOrder =
+        sortOrder.equalsIgnoreCase("asc")
+            ? Sort.by(sortBy).ascending()
+            : Sort.by(sortBy).descending();
+
+    Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+    Page<Order> pageOrders = orderRepository.findAll(pageDetails);
+    List<Order> orders = pageOrders.getContent();
+    List<OrderDTO> orderDTOS =
+        orders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).toList();
+
+    OrderResponse orderResponse = new OrderResponse();
+    orderResponse.setContent(orderDTOS);
+    orderResponse.setPageNumber(pageOrders.getNumber());
+    orderResponse.setPageSize(pageOrders.getSize());
+    orderResponse.setTotalElements(pageOrders.getTotalElements());
+    orderResponse.setTotalPages(pageOrders.getTotalPages());
+    orderResponse.setLastPage(pageOrders.isLast());
+
+    return orderResponse;
   }
 }

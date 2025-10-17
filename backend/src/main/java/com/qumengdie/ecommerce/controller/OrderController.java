@@ -1,6 +1,8 @@
 package com.qumengdie.ecommerce.controller;
 
+import com.qumengdie.ecommerce.config.AppConstants;
 import com.qumengdie.ecommerce.payload.OrderDTO;
+import com.qumengdie.ecommerce.payload.OrderResponse;
 import com.qumengdie.ecommerce.payload.OrderRequestDTO;
 import com.qumengdie.ecommerce.payload.StripePaymentDTO;
 import com.qumengdie.ecommerce.service.OrderService;
@@ -43,5 +45,16 @@ public class OrderController {
       @RequestBody StripePaymentDTO stripePaymentDTO) throws StripeException {
     PaymentIntent paymentIntent = stripeService.paymentIntent(stripePaymentDTO);
     return new ResponseEntity<>(paymentIntent.getClientSecret(), HttpStatus.CREATED);
+  }
+
+  @GetMapping("/admin/orders")
+  public ResponseEntity<OrderResponse> getAllOrders(
+      @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER)
+          Integer pageNumber,
+      @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+      @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_ORDERS_BY) String sortBy,
+      @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+    OrderResponse response = orderService.getAllOrders(pageNumber, pageSize, sortBy, sortOrder);
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 }
