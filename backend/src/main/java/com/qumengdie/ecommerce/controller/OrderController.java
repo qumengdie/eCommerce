@@ -2,8 +2,9 @@ package com.qumengdie.ecommerce.controller;
 
 import com.qumengdie.ecommerce.config.AppConstants;
 import com.qumengdie.ecommerce.payload.OrderDTO;
-import com.qumengdie.ecommerce.payload.OrderResponse;
 import com.qumengdie.ecommerce.payload.OrderRequestDTO;
+import com.qumengdie.ecommerce.payload.OrderResponse;
+import com.qumengdie.ecommerce.payload.OrderStatusUpdateDTO;
 import com.qumengdie.ecommerce.payload.StripePaymentDTO;
 import com.qumengdie.ecommerce.service.OrderService;
 import com.qumengdie.ecommerce.service.StripeService;
@@ -13,7 +14,14 @@ import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
@@ -56,5 +64,12 @@ public class OrderController {
       @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
     OrderResponse response = orderService.getAllOrders(pageNumber, pageSize, sortBy, sortOrder);
     return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  @PutMapping("/admin/orders/{orderId}/status")
+  public ResponseEntity<OrderDTO> updateOrderStatus(
+      @PathVariable Long orderId, @RequestBody OrderStatusUpdateDTO orderStatusUpdateDTO) {
+    OrderDTO orderDTO = orderService.updateOrder(orderId, orderStatusUpdateDTO.getStatus());
+    return new ResponseEntity<>(orderDTO, HttpStatus.OK);
   }
 }
