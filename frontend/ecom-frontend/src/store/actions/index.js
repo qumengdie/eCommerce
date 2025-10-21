@@ -354,3 +354,22 @@ export const getOrdersForDashboard = (queryString) => async (dispatch) => {
     });
   }
 };
+
+export const updateOrderStatusFromDashboard =
+  (orderId, orderStatus, toast, setLoarder) => async (dispatch, getState) => {
+    dispatch({ type: 'BUTTON_LOADER' });
+    try {
+      setLoarder(true);
+      const { data } = await api.put(`/admin/orders/${orderId}/status`, {
+        status: orderStatus,
+      });
+      toast.success(data.message || 'Order status updated successfully');
+      await dispatch(getOrdersForDashboard);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || 'Internal Server Error');
+      dispatch({ type: 'IS_ERROR', payload: null });
+    } finally {
+      setLoarder(false);
+    }
+  };
