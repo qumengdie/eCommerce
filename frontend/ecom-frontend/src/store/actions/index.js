@@ -373,3 +373,46 @@ export const updateOrderStatusFromDashboard =
       setLoarder(false);
     }
   };
+
+export const dashboardProductsAction = (queryString) => async (dispatch) => {
+  try {
+    dispatch({ type: 'IS_FETCHING' });
+
+    const { data } = await api.get(`/admin/products?${queryString}`);
+    dispatch({
+      type: 'FETCH_PRODUCTS',
+      payload: data.content,
+      pageNumber: data.pageNumber,
+      pageSize: data.pageSize,
+      totalElements: data.totalElements,
+      totalPages: data.totalPages,
+      lastPage: data.lastPage,
+    });
+
+    dispatch({ type: 'IS_SUCCESS' });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    dispatch({
+      type: 'IS_ERROR',
+      payload:
+        error?.response?.data?.message || 'Failed to fetch dashboard products',
+    });
+  }
+};
+
+export const updateProductFromDashboard =
+  (sendData, toast, reset, setLoader, setOpen) => async (dispatch) => {
+    try {
+      setLoader(true);
+      await api.put(`/admin/products/${sendData.id}`, sendData);
+      toast.success('Product updated successfully');
+      reset();
+      setLoader(false);
+      setOpen(false);
+      await dispatch(dashboardProductsAction());
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.description || 'Product update failed'
+      );
+    }
+  };
