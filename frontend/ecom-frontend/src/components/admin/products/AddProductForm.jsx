@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import InputField from '../../shared/InputField';
-import { Button } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { updateProductFromDashboard } from '../../../store/actions';
+import { Button, Skeleton } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchCategories,
+  updateProductFromDashboard,
+} from '../../../store/actions';
 import toast from 'react-hot-toast';
 import Spinners from '../../shared/Spinners';
+import SelectTextField from '../../shared/SelectTextField';
 
 const AddProductForm = ({ setOpen, product, update = false }) => {
   const [loader, setLoader] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const { categories } = useSelector((state) => state.products);
+  const { categoryLoader, errorMessage } = useSelector((state) => state.errors);
+
   const dispatch = useDispatch();
   const {
     register,
@@ -45,6 +53,21 @@ const AddProductForm = ({ setOpen, product, update = false }) => {
     }
   }, [update, product]);
 
+  useEffect(() => {
+    if (!update) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, update]);
+
+  useEffect(() => {
+    if (!categoryLoader && categories) {
+      setSelectedCategory(categories[0]);
+    }
+  }, [categories, categoryLoader]);
+
+  if (categoryLoader) return <Skeleton />;
+  if (errorMessage) return <ErrorPage message={errorMessage} />;
+
   return (
     <div className="py-5 relative h-full">
       <form className="space-y-4" onSubmit={handleSubmit(saveProductHandler)}>
@@ -60,6 +83,15 @@ const AddProductForm = ({ setOpen, product, update = false }) => {
             errors={errors}
           />
         </div>
+
+        {!update && (
+          <SelectTextField
+            label="Select Categories"
+            select={selectedCategory}
+            setSelect={setSelectedCategory}
+            lists={categories}
+          />
+        )}
 
         <div className="flex md:flex-row flex-col gap-4 w-full">
           <InputField
@@ -155,8 +187,10 @@ const AddProductForm = ({ setOpen, product, update = false }) => {
               <div className="flex gap-2 items-center">
                 <Spinners /> Loading...
               </div>
-            ) : (
+            ) : update ? (
               'Update'
+            ) : (
+              'Add'
             )}
           </Button>
         </div>
