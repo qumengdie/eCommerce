@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MdAddShoppingCart } from 'react-icons/md';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../../shared/Loader';
 import { FaBoxOpen } from 'react-icons/fa';
 import { DataGrid } from '@mui/x-data-grid';
@@ -8,6 +8,10 @@ import { adminProductTableColumn } from '../../helper/tableColumn';
 import { useDashboardProductFilter } from '../../../hooks/useProductFilter';
 import Modal from '../../shared/Modal';
 import AddProductForm from './AddProductForm';
+import DeleteModal from '../../shared/DeleteModal';
+import { set } from 'react-hook-form';
+import { deleteProduct } from '../../../store/actions';
+import toast from 'react-hot-toast';
 
 const AdminProducts = () => {
   const { products, pagination } = useSelector((state) => state.products);
@@ -16,9 +20,13 @@ const AdminProducts = () => {
     pagination?.pageNumber + 1 || 1
   );
 
+  const dispatch = useDispatch();
+
   const [selectedProduct, setSelectedProduct] = useState('');
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [loader, setLoader] = useState(false);
 
   useDashboardProductFilter();
 
@@ -40,13 +48,22 @@ const AdminProducts = () => {
     setOpenUpdateModal(true);
   };
 
-  const handleDelete = (product) => {};
+  const handleDelete = (product) => {
+    setSelectedProduct(product);
+    setOpenDeleteModal(true);
+  };
 
   const handleImageUpload = (product) => {};
 
   const handleProductView = (product) => {};
 
   const handlePaginationChange = (paginationModel) => {};
+
+  const onDeleteHandler = () => {
+    dispatch(
+      deleteProduct(setLoader, selectedProduct?.id, toast, setOpenDeleteModal)
+    );
+  };
 
   const emptyProduct = !products || products?.length === 0;
 
@@ -126,6 +143,14 @@ const AdminProducts = () => {
           update={openUpdateModal}
         ></AddProductForm>
       </Modal>
+
+      <DeleteModal
+        open={openDeleteModal}
+        setOpen={setOpenDeleteModal}
+        title={'Delete Product'}
+        onDeleteHandler={onDeleteHandler}
+        loader={loader}
+      />
     </div>
   );
 };
